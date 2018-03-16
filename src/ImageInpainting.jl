@@ -1,6 +1,23 @@
+# ------------------------------------------------------------------
+# Copyright (c) 2018, Júlio Hoffimann Mendes <juliohm@stanford.edu>
+# Licensed under the ISC License. See LICENCE in the project root.
+# ------------------------------------------------------------------
+
 __precompile__()
+
 module ImageInpainting
 
-# Package code goes here.
+using ImageMorphology
+using ImageFiltering
+
+include("utils.jl")
+include("inpaint.jl")
+
+export
+  # main function
+  inpaint,
+
+  # algorithms
+  Crimisini
 
 end
