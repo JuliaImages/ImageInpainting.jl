@@ -18,7 +18,7 @@ Pkg.add("ImageInpainting")
 ```julia
 using ImageInpainting
 
-# inpaint image on a mask with a given algorithm
+# inpaint image within mask using algorithm
 inpaint(img, mask, algo)
 ```
 
