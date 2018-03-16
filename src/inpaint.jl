@@ -11,6 +11,20 @@ An inpainting algorithm with given parameters.
 abstract type InpaintAlgo end
 
 """
+    inpaint(img, mask, algo)
+
+Inpaint `img` on pixels marked as `true` in `mask` using
+algorithm `algo`.
+"""
+function inpaint(img::AbstractArray, mask::BitArray, algo::InpaintAlgo)
+  # sanity checks
+  @assert size(img) == size(mask) "image and mask must have same size"
+
+  # dispatch appropriate implementation
+  inpaint_impl(img, mask, algo)
+end
+
+"""
     Crimisini(psize)
 
 Examplar-based inpainting based on confidence
@@ -23,11 +37,10 @@ Crimisini, A., Pérez, P., Toyama, K., 2004. Region Filling
 and Object Removal by Examplar-based Image Inpainting.
 """
 struct Crimisini <: InpaintAlgo
-  psize
+  psize::NTuple # patch size
 end
 
-function inpaint(img::AbstractArray, mask::AbstractArray,
-                 algo::InpaintAlgo=Crimisini((3,3)))
+function inpaint_impl(img::AbstractArray, mask::BitArray, algo::Crimisini)
   # patch size
   psize = algo.psize
 
