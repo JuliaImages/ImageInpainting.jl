@@ -87,5 +87,5 @@ function inpaint_impl(img::AbstractArray{T,N}, mask::BitArray{N}, algo::Crimisin
     δΩ = find(ϕ⁺ - ϕ)
   end
 
-  padimg
+  view(padimg, [1+prepad[i]:size(padimg,i)-postpad[i] for i=1:N]...)
 end
