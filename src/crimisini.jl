@@ -19,7 +19,8 @@ struct Crimisini <: InpaintAlgo
   psize::Tuple # patch size
 end
 
-function inpaint_impl(img::AbstractArray, mask::BitArray, algo::Crimisini)
+# implementation follows the notation in the paper
+function inpaint_impl(img::AbstractArray{T,N}, mask::BitArray{N}, algo::Crimisini) where {T,N}
   # patch size
   psize = algo.psize
 
@@ -30,10 +31,11 @@ function inpaint_impl(img::AbstractArray, mask::BitArray, algo::Crimisini)
   C = Float64.(ϕ)
 
   # pad arrays
-  kern = centered(ones(psize))
-  padimg = parent(padarray(img, Pad(:symmetric)(kern)))
-  ϕ = parent(padarray(ϕ, Fill(true, kern)))
-  C = parent(padarray(C, Fill(0.0,  kern)))
+  prepad  = [(psize[i]-1) ÷ 2 for i=1:N]
+  postpad = [(psize[i])   ÷ 2 for i=1:N]
+  padimg = parent(padarray(img, Pad(:symmetric, prepad, postpad)))
+  ϕ = parent(padarray(ϕ, Fill(true, prepad, postpad)))
+  C = parent(padarray(C, Fill(0.0,  prepad, postpad)))
 
   # inpainting frontier
   ϕ⁺ = dilate(ϕ)
@@ -47,9 +49,9 @@ function inpaint_impl(img::AbstractArray, mask::BitArray, algo::Crimisini)
     end
 
     # isophote map
-    G = pointgradients(padimg, δΩ)
-    N = pointgradients(ϕ, δΩ)
-    D = vec(abs.(sum(G.*N, 2)))
+    grads = pointgradients(padimg, δΩ)
+    direc = pointgradients(ϕ, δΩ)
+    D = vec(abs.(sum(grads.*direc, 2)))
     D /= maximum(D)
 
     # select patch in frontier
