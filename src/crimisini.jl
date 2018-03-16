@@ -24,6 +24,9 @@ function inpaint_impl(img::AbstractArray{T,N}, mask::BitArray{N}, algo::Crimisin
   # patch size
   psize = algo.psize
 
+  # sanity checks
+  @assert length(psize) == N "patch size is inconsistent with dimension of image"
+
   # already filled region
   ϕ = .!mask
 

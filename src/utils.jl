@@ -42,15 +42,14 @@ Helper function to extract a patch of size
 """
 function selectpatch(imgs, psize, p)
   imsize = size(imgs[1])
+  N = length(imsize)
 
   # patch center
-  i, j = ind2sub(imsize, p)
+  center = ind2sub(imsize, p)
 
   # patch corners
-  iₛ = i - (psize[1]-1) ÷ 2
-  jₛ = j - (psize[2]-1) ÷ 2
-  iₑ = i + psize[1] ÷ 2
-  jₑ = j + psize[2] ÷ 2
+  start  = [center[i] - (psize[i]-1) ÷ 2 for i=1:N]
+  finish = [center[i] +     psize[i] ÷ 2 for i=1:N]
 
-  [view(img, iₛ:iₑ, jₛ:jₑ) for img in imgs]
+  [view(img, [start[i]:finish[i] for i=1:N]...) for img in imgs]
 end
