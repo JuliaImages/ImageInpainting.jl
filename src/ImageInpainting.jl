@@ -11,6 +11,7 @@ using ImageMorphology
 using ImageFiltering
 
 include("utils.jl")
+include("pointgradients.jl")
 include("inpaint.jl")
 
 export

@@ -16,7 +16,7 @@ Crimisini, A., Pérez, P., Toyama, K., 2004. Region Filling
 and Object Removal by Examplar-based Image Inpainting.
 """
 struct Crimisini <: InpaintAlgo
-  psize::NTuple # patch size
+  psize::Tuple # patch size
 end
 
 function inpaint_impl(img::AbstractArray, mask::BitArray, algo::Crimisini)
@@ -46,20 +46,26 @@ function inpaint_impl(img::AbstractArray, mask::BitArray, algo::Crimisini)
       C[p] = sum(c[b]) / prod(psize)
     end
 
+    # isophote map
+    G = pointgradients(padimg, δΩ)
+    N = pointgradients(ϕ, δΩ)
+    D = vec(abs.(sum(G.*N, 2)))
+    D /= maximum(D)
+
     # select patch in frontier
-    idx = indmax(C[δΩ])
+    idx = indmax(C[δΩ].*D)
     p = δΩ[idx]
     ψₚ, bₚ = selectpatch([padimg, ϕ], psize, p)
 
     # compute distance to all other patches
-    D = convdist(padimg, ψₚ, weights=bₚ)
+    Δ = convdist(padimg, ψₚ, weights=bₚ)
 
     # only consider patches in filled region
-    D[mask] = Inf
+    Δ[mask] = Inf
 
     # find index in padded arrays
-    idx = indmin(D)
-    sub = ind2sub(size(D), idx)
+    idx = indmin(Δ)
+    sub = ind2sub(size(Δ), idx)
     padsub = [sub[i] + (psize[i]-1)÷2 for i in 1:length(psize)]
     q = sub2ind(size(padimg), padsub...)
 
