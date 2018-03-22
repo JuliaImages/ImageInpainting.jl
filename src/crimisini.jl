@@ -48,7 +48,7 @@ function inpaint_impl(img::AbstractArray{T,N}, mask::BitArray{N}, algo::Crimisin
   while !isempty(δΩ)
     # update confidence values in frontier
     for p in δΩ
-      c, b = selectpatch([C, ϕ], psize, p)
+      c, b = selectpatch((C, ϕ), psize, p)
       C[p] = sum(c[b]) / prod(psize)
     end
 
@@ -61,7 +61,7 @@ function inpaint_impl(img::AbstractArray{T,N}, mask::BitArray{N}, algo::Crimisin
     # select patch in frontier
     idx = indmax(C[δΩ].*D)
     p = δΩ[idx]
-    ψₚ, bₚ = selectpatch([padimg, ϕ], psize, p)
+    ψₚ, bₚ = selectpatch((padimg, ϕ), psize, p)
 
     # compute distance to all other patches
     Δ = convdist(padimg, ψₚ, weights=bₚ)
@@ -76,7 +76,7 @@ function inpaint_impl(img::AbstractArray{T,N}, mask::BitArray{N}, algo::Crimisin
     q = sub2ind(size(padimg), padsub...)
 
     # select best candidate
-    ψᵦ, bᵦ = selectpatch([padimg, ϕ], psize, q)
+    ψᵦ, bᵦ = selectpatch((padimg, ϕ), psize, q)
 
     # paste patch and mark pixels as painted
     b = bᵦ .& .!bₚ
