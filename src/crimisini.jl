@@ -15,17 +15,16 @@ as a tuple of integers.
 Crimisini, A., Pérez, P., Toyama, K., 2004. Region Filling
 and Object Removal by Examplar-based Image Inpainting.
 """
-struct Crimisini <: InpaintAlgo
-  psize::Tuple # patch size
+struct Crimisini{N} <: InpaintAlgo
+  psize::Dims{N} # patch size
 end
 
+Crimisini(psize::Vararg{Int,N}) where {N} = Crimisini{N}(psize)
+
 # implementation follows the notation in the paper
-function inpaint_impl(img::AbstractArray{T,N}, mask::BitArray{N}, algo::Crimisini) where {T,N}
+function inpaint_impl(img::AbstractArray{T,N}, mask::BitArray{N}, algo::Crimisini{N}) where {T,N}
   # patch size
   psize = algo.psize
-
-  # sanity checks
-  @assert length(psize) == N "patch size is inconsistent with dimension of image"
 
   # already filled region
   ϕ = .!mask
@@ -40,9 +39,11 @@ function inpaint_impl(img::AbstractArray{T,N}, mask::BitArray{N}, algo::Crimisin
   ϕ = parent(padarray(ϕ, Fill(true, prepad, postpad)))
   C = parent(padarray(C, Fill(0.0,  prepad, postpad)))
 
+  # fix any invalid pixel value (e.g. NaN) inside of the mask
+  padimg[isnan.(padimg)] = zero(T)
+
   # inpainting frontier
-  ϕ⁺ = dilate(ϕ)
-  δΩ = find(ϕ⁺ - ϕ)
+  δΩ = find(dilate(ϕ) - ϕ)
 
   while !isempty(δΩ)
     # update confidence values in frontier
@@ -83,8 +84,7 @@ function inpaint_impl(img::AbstractArray{T,N}, mask::BitArray{N}, algo::Crimisin
     bₚ[b] = true
 
     # update frontier
-    ϕ⁺ = dilate(ϕ)
-    δΩ = find(ϕ⁺ - ϕ)
+    δΩ = find(dilate(ϕ) - ϕ)
   end
 
   view(padimg, [1+prepad[i]:size(padimg,i)-postpad[i] for i=1:N]...)
