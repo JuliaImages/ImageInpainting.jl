@@ -5,6 +5,11 @@
 
 Image inpainting algorithms in Julia.
 
+For those situations where we need to remove undesired elements from the scene...
+
+![trump](imgs/trump.png)
+![lighthouse](imgs/lighthouse.png)
+
 ## Installation
 
 Get the latest stable release with Julia's package manager:
