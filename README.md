@@ -1,7 +1,7 @@
 # ImageInpainting.jl
 
-[![Build Status](https://travis-ci.org/juliohm/ImageInpainting.jl.svg?branch=master)](https://travis-ci.org/juliohm/ImageInpainting.jl)
-[![CodeCov](https://codecov.io/gh/juliohm/ImageInpainting.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/juliohm/ImageInpainting.jl)
+[![Build Status](https://travis-ci.org/JuliaImages/ImageInpainting.jl.svg?branch=master)](https://travis-ci.org/JuliaImages/ImageInpainting.jl)
+[![CodeCov](https://codecov.io/gh/JuliaImages/ImageInpainting.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaImages/ImageInpainting.jl)
 
 Image inpainting algorithms in Julia.
 
@@ -37,5 +37,5 @@ inpaint(img, mask, algo)
 
 Contributions are very welcome, as are feature requests and suggestions.
 
-Please [open an issue](https://github.com/juliohm/ImageInpainting.jl/issues) if you encounter
+Please [open an issue](https://github.com/JuliaImages/ImageInpainting.jl/issues) if you encounter
 any problems.
