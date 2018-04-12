@@ -23,6 +23,9 @@ Crimisini(psize::Vararg{Int,N}) where {N} = Crimisini{N}(psize)
 
 # implementation follows the notation in the paper
 function inpaint_impl(img::AbstractArray{T,N}, mask::BitArray{N}, algo::Crimisini{N}) where {T,N}
+  # use all CPU cores in FFT
+  FFTW.set_num_threads(num_physical_cores())
+
   # patch size
   psize = algo.psize
 

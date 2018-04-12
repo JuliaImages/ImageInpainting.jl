@@ -9,6 +9,7 @@ module ImageInpainting
 
 using ImageMorphology
 using ImageFiltering
+using Hwloc: num_physical_cores
 
 include("utils.jl")
 include("pointgradients.jl")
