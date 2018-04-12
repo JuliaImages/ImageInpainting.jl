@@ -10,6 +10,8 @@ For those situations where we need to remove undesired elements from the scene..
 ![trump](imgs/trump.png)
 ![lighthouse](imgs/lighthouse.png)
 
+**Obs:** Currently, only single channel N-dimensional images are supported. For example, `zeros(100,100)` and `zeros(50,50,50)` are valid 2D and 3D input images. `zeros(100,100,3)` is *not* a 2D image with 3 channels.
+
 ## Installation
 
 Get the latest stable release with Julia's package manager:
