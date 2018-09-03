@@ -46,7 +46,7 @@ function inpaint_impl(img::AbstractArray{T,N}, mask::BitArray{N}, algo::Crimisin
   padimg[isnan.(padimg)] .= zero(T)
 
   # inpainting frontier
-  δΩ = find(dilate(ϕ) - ϕ)
+  δΩ = findall(dilate(ϕ) - ϕ)
 
   while !isempty(δΩ)
     # update confidence values in frontier
@@ -87,7 +87,7 @@ function inpaint_impl(img::AbstractArray{T,N}, mask::BitArray{N}, algo::Crimisin
     bₚ[b] .= true
 
     # update frontier
-    δΩ = find(dilate(ϕ) - ϕ)
+    δΩ = findall(dilate(ϕ) - ϕ)
   end
 
   view(padimg, [1+prepad[i]:size(padimg,i)-postpad[i] for i=1:N]...)
