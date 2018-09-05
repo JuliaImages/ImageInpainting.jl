@@ -3,8 +3,6 @@
 # Licensed under the ISC License. See LICENCE in the project root.
 # ------------------------------------------------------------------
 
-__precompile__()
-
 module ImageInpainting
 
 using ImageMorphology

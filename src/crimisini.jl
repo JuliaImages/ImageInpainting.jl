@@ -46,7 +46,7 @@ function inpaint_impl(img::AbstractArray{T,N}, mask::BitArray{N}, algo::Crimisin
   padimg[isnan.(padimg)] .= zero(T)
 
   # inpainting frontier
-  δΩ = find(dilate(ϕ) - ϕ)
+  δΩ = findall(dilate(ϕ) .& .!ϕ)
 
   while !isempty(δΩ)
     # update confidence values in frontier
@@ -73,10 +73,8 @@ function inpaint_impl(img::AbstractArray{T,N}, mask::BitArray{N}, algo::Crimisin
     Δ[mask] .= Inf
 
     # find index in padded arrays
-    idx = argmin(Δ)
-    sub = ind2sub(size(Δ), idx)
-    padsub = [sub[i] + (tilesize[i]-1)÷2 for i in 1:length(tilesize)]
-    q = sub2ind(size(padimg), padsub...)
+    sub = argmin(Δ)
+    q = ntuple(i -> sub[i] + (tilesize[i]-1)÷2, N)
 
     # select best candidate
     ψᵦ, bᵦ = selectpatch((padimg, ϕ), tilesize, q)
@@ -87,7 +85,7 @@ function inpaint_impl(img::AbstractArray{T,N}, mask::BitArray{N}, algo::Crimisin
     bₚ[b] .= true
 
     # update frontier
-    δΩ = find(dilate(ϕ) - ϕ)
+    δΩ = findall(dilate(ϕ) .& .!ϕ)
   end
 
   view(padimg, [1+prepad[i]:size(padimg,i)-postpad[i] for i=1:N]...)

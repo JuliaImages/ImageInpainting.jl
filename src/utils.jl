@@ -35,21 +35,18 @@ function convdist(img::AbstractArray, kern::AbstractArray; weights=nothing)
 end
 
 """
-    selectpatch(imgs, psize, p)
+    selectpatch(imgs, tilesize, center)
 
 Helper function to extract a patch of size
-`psize` from `imgs` centered at index `p`.
+`tilesize` from `imgs` centered at Cartesian
+index `center`.
 """
-function selectpatch(imgs, psize, p)
-  imsize = size(imgs[1])
-  N = length(imsize)
-
-  # patch center
-  center = ind2sub(imsize, p)
+function selectpatch(imgs, tilesize, center)
+  N = length(tilesize)
 
   # patch corners
-  start  = [center[i] - (psize[i]-1) ÷ 2 for i=1:N]
-  finish = [center[i] +     psize[i] ÷ 2 for i=1:N]
+  start  = ntuple(i -> center[i] - (tilesize[i]-1) ÷ 2, N)
+  finish = ntuple(i -> center[i] +     tilesize[i] ÷ 2, N)
 
   [view(img, [start[i]:finish[i] for i=1:N]...) for img in imgs]
 end
