@@ -1,4 +1,5 @@
-julia 0.6
-ImageMorphology 0.0.2
-ImageFiltering 0.2.3
-Hwloc 0.6.2
+julia 0.7
+ImageMorphology 0.1.0
+ImageFiltering 0.3.0
+FFTW 0.2.4
+CpuId 0.2.0

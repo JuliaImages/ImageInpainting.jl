@@ -40,12 +40,12 @@ function pointgradients(img::AbstractArray, points::AbstractVector; method=:ando
         end
       end
 
-      A = zeros(kern)
+      A = zeros(size(kern))
       shape = size(kern)
       for (k, p) in enumerate(points)
         icenter = CartesianIndex(ind2sub(extent, p))
         i1 = CartesianIndex(tuple(ones(Int, ndirs)...))
-        for ii in CartesianRange(shape)
+        for ii in CartesianIndices(shape)
           A[ii] = padimg[ii + icenter - i1]
         end
 

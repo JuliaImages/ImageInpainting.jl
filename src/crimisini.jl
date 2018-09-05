@@ -4,10 +4,10 @@
 # ------------------------------------------------------------------
 
 """
-    Crimisini(psize)
+    Crimisini(tilesize)
 
 Examplar-based inpainting based on confidence
-and isophote maps. `psize` is the patch size
+and isophote maps. `tilesize` is the patch size
 as a tuple of integers.
 
 ## References
@@ -16,18 +16,18 @@ Crimisini, A., Pérez, P., Toyama, K., 2004. Region Filling
 and Object Removal by Examplar-based Image Inpainting.
 """
 struct Crimisini{N} <: InpaintAlgo
-  psize::Dims{N} # patch size
+  tilesize::Dims{N} # patch size
 end
 
-Crimisini(psize::Vararg{Int,N}) where {N} = Crimisini{N}(psize)
+Crimisini(tilesize::Vararg{Int,N}) where {N} = Crimisini{N}(tilesize)
 
 # implementation follows the notation in the paper
 function inpaint_impl(img::AbstractArray{T,N}, mask::BitArray{N}, algo::Crimisini{N}) where {T,N}
   # use all CPU cores in FFT
-  FFTW.set_num_threads(num_physical_cores())
+  set_num_threads(cpucores())
 
-  # patch size
-  psize = algo.psize
+  # patch (or tile) size
+  tilesize = algo.tilesize
 
   # already filled region
   ϕ = .!mask
@@ -36,14 +36,14 @@ function inpaint_impl(img::AbstractArray{T,N}, mask::BitArray{N}, algo::Crimisin
   C = Float64.(ϕ)
 
   # pad arrays
-  prepad  = [(psize[i]-1) ÷ 2 for i=1:N]
-  postpad = [(psize[i])   ÷ 2 for i=1:N]
+  prepad  = [(tilesize[i]-1) ÷ 2 for i=1:N]
+  postpad = [(tilesize[i])   ÷ 2 for i=1:N]
   padimg = parent(padarray(img, Pad(:symmetric, prepad, postpad)))
   ϕ = parent(padarray(ϕ, Fill(true, prepad, postpad)))
   C = parent(padarray(C, Fill(0.0,  prepad, postpad)))
 
   # fix any invalid pixel value (e.g. NaN) inside of the mask
-  padimg[isnan.(padimg)] = zero(T)
+  padimg[isnan.(padimg)] .= zero(T)
 
   # inpainting frontier
   δΩ = find(dilate(ϕ) - ϕ)
@@ -51,40 +51,40 @@ function inpaint_impl(img::AbstractArray{T,N}, mask::BitArray{N}, algo::Crimisin
   while !isempty(δΩ)
     # update confidence values in frontier
     for p in δΩ
-      c, b = selectpatch((C, ϕ), psize, p)
-      C[p] = sum(c[b]) / prod(psize)
+      c, b = selectpatch((C, ϕ), tilesize, p)
+      C[p] = sum(c[b]) / prod(tilesize)
     end
 
     # isophote map
     grads = pointgradients(padimg, δΩ)
     direc = pointgradients(ϕ, δΩ)
-    D = vec(abs.(sum(grads.*direc, 2)))
+    D = vec(abs.(sum(grads.*direc, dims=2)))
     D /= maximum(D)
 
     # select patch in frontier
-    idx = indmax(C[δΩ].*D)
+    idx = argmax(C[δΩ].*D)
     p = δΩ[idx]
-    ψₚ, bₚ = selectpatch((padimg, ϕ), psize, p)
+    ψₚ, bₚ = selectpatch((padimg, ϕ), tilesize, p)
 
     # compute distance to all other patches
     Δ = convdist(padimg, ψₚ, weights=bₚ)
 
     # only consider patches in filled region
-    Δ[mask] = Inf
+    Δ[mask] .= Inf
 
     # find index in padded arrays
-    idx = indmin(Δ)
+    idx = argmin(Δ)
     sub = ind2sub(size(Δ), idx)
-    padsub = [sub[i] + (psize[i]-1)÷2 for i in 1:length(psize)]
+    padsub = [sub[i] + (tilesize[i]-1)÷2 for i in 1:length(tilesize)]
     q = sub2ind(size(padimg), padsub...)
 
     # select best candidate
-    ψᵦ, bᵦ = selectpatch((padimg, ϕ), psize, q)
+    ψᵦ, bᵦ = selectpatch((padimg, ϕ), tilesize, q)
 
     # paste patch and mark pixels as painted
     b = bᵦ .& .!bₚ
-    ψₚ[b] = ψᵦ[b]
-    bₚ[b] = true
+    ψₚ[b] .= ψᵦ[b]
+    bₚ[b] .= true
 
     # update frontier
     δΩ = find(dilate(ϕ) - ϕ)

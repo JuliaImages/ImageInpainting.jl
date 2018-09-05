@@ -9,7 +9,8 @@ module ImageInpainting
 
 using ImageMorphology
 using ImageFiltering
-using Hwloc: num_physical_cores
+using FFTW: set_num_threads
+using CpuId: cpucores
 
 include("utils.jl")
 include("pointgradients.jl")

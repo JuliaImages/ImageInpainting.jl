@@ -8,7 +8,7 @@
 
 Perform filtering on `img` with kernel `kern` using the FFT algorithm.
 """
-function imfilter_cpu{T<:Real,K<:Real,N}(img::AbstractArray{T,N}, kern::AbstractArray{K,N})
+function imfilter_cpu(img::AbstractArray{T,N}, kern::AbstractArray{K,N}) where {T<:Real,K<:Real,N}
   imfilter(img, centered(kern), Inner(), Algorithm.FFT())
 end
 
@@ -28,7 +28,7 @@ function convdist(img::AbstractArray, kern::AbstractArray; weights=nothing)
   AB = imfilter_cpu(img, wkern)
   B² = sum(abs2, wkern)
 
-  D = abs.(A² - 2AB + B²)
+  D = abs.(A² .- 2AB .+ B²)
 
   # always return a plain simple array
   parent(D)

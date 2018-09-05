@@ -1,5 +1,6 @@
-GR
-Plots
-VisualRegressionTests
 ColorTypes
 TestImages
+Plots
+VisualRegressionTests
+ImageMagick
+QuartzImageIO

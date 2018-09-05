@@ -1,16 +1,9 @@
 using ImageInpainting
 using ColorTypes
 using TestImages
-using Plots
-using Base.Test
+using Plots; gr(size=(800,400),yflip=true,colorbar=false,ticks=false)
 using VisualRegressionTests
-
-# plot defaults
-gr(size=(800,400), yflip=true, colorbar=false, ticks=false)
-
-# setup GR backend for Travis CI
-ENV["GKSwstype"] = "100"
-ENV["PLOTS_TEST"] = "true"
+using Test, Pkg
 
 # list of maintainers
 maintainers = ["juliohm"]
@@ -20,6 +13,11 @@ istravis = "TRAVIS" ∈ keys(ENV)
 ismaintainer = "USER" ∈ keys(ENV) && ENV["USER"] ∈ maintainers
 datadir = joinpath(@__DIR__,"data")
 
+if ismaintainer
+  Pkg.add("Gtk")
+  using Gtk
+end
+
 # test images
 blobs = testimage("blobs")
 lighthouse = testimage("lighthouse")
@@ -27,9 +25,9 @@ lighthouse = testimage("lighthouse")
 # helper functions
 function plot_crimisini_on_array(fname, img, inds, psize)
   fimg = Float64.(Gray.(img))
-  mask = falses(fimg)
-  mask[inds...] = true
-  fimg[mask] = NaN
+  mask = falses(size(fimg))
+  mask[inds...] .= true
+  fimg[mask] .= NaN
   fimg2 = inpaint(fimg, mask, Crimisini(psize))
   plt1 = heatmap(fimg, title="before inpainting")
   plt2 = heatmap(fimg2, title="after inpainting")
