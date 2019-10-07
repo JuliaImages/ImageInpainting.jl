@@ -1,48 +1,25 @@
 using ImageInpainting
 using ColorTypes
 using TestImages
-using Plots; gr(size=(800,400),yflip=true,colorbar=false,ticks=false)
-using VisualRegressionTests
-using Test, Pkg
-
-# list of maintainers
-maintainers = ["juliohm"]
-
-# environment settings
-istravis = "TRAVIS" ∈ keys(ENV)
-ismaintainer = "USER" ∈ keys(ENV) && ENV["USER"] ∈ maintainers
-datadir = joinpath(@__DIR__,"data")
-
-if ismaintainer
-  Pkg.add("Gtk")
-  using Gtk
-end
+using Test, ReferenceTests
 
 # test images
 blobs = testimage("blobs")
 lighthouse = testimage("lighthouse")
 
 # helper functions
-function plot_crimisini_on_array(fname, img, inds, psize)
+function plot_crimisini_on_array(img, inds, psize)
   fimg = Float64.(Gray.(img))
   mask = falses(size(fimg))
   mask[inds...] .= true
   fimg[mask] .= NaN
-  fimg2 = inpaint(fimg, mask, Crimisini(psize))
-  plt1 = heatmap(fimg, title="before inpainting")
-  plt2 = heatmap(fimg2, title="after inpainting")
-  plot(plt1, plt2)
-  png(fname)
+  out = inpaint(fimg, mask, Crimisini(psize))
+  return Gray.(out)
 end
 
 @testset "ImageInpainting.jl" begin
   @testset "Plain arrays" begin
-    plot_blobs(fname) = plot_crimisini_on_array(fname, blobs, (50:150,50:150), (11,11))
-    refimg = joinpath(datadir,"Blobs.png")
-    @test test_images(VisualTest(plot_blobs, refimg), popup=!istravis) |> success
-
-    plot_lighthouse(fname) = plot_crimisini_on_array(fname, lighthouse, (50:350,300:400), (30,30))
-    refimg = joinpath(datadir,"LightHouse.png")
-    @test test_images(VisualTest(plot_lighthouse, refimg), popup=!istravis) |> success
+    @test_reference "references/Blobs.png" plot_crimisini_on_array(blobs, (50:150,50:150), (11,11))
+    @test_reference "references/LightHouse.png" plot_crimisini_on_array(lighthouse, (50:350,300:400), (30,30))
   end
 end
