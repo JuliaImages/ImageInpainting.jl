@@ -1,11 +1,16 @@
-@testset "Crimisini" begin
-  if visualtests
-    plot_blobs(fname) = plot_crimisini_on_array(fname, blobs, (50:150,50:150), (11,11))
-    refimg = joinpath(datadir,"Blobs.png")
-    @test test_images(VisualTest(plot_blobs, refimg), popup=!istravis) |> success
+# helper functions
+function plot_crimisini_on_array(img, inds, psize)
+  fimg = Float64.(Gray.(img))
+  mask = falses(size(fimg))
+  mask[inds...] .= true
+  fimg[mask] .= NaN
+  out = inpaint(fimg, mask, Crimisini(psize))
+  return Gray.(out)
+end
 
-    plot_lighthouse(fname) = plot_crimisini_on_array(fname, lighthouse, (50:350,300:400), (30,30))
-    refimg = joinpath(datadir,"LightHouse.png")
-    @test test_images(VisualTest(plot_lighthouse, refimg), popup=!istravis) |> success
+@testset "ImageInpainting.jl" begin
+  @testset "Plain arrays" begin
+    @test_reference "references/Blobs.png" plot_crimisini_on_array(blobs, (50:150,50:150), (11,11))
+    @test_reference "references/LightHouse.png" plot_crimisini_on_array(lighthouse, (50:350,300:400), (30,30))
   end
 end
