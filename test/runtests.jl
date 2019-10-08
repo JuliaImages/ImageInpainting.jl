@@ -1,19 +1,21 @@
 using ImageInpainting
 using ColorTypes
 using TestImages
-using Plots; gr(size=(800,400),yflip=true,colorbar=false,ticks=false)
-using VisualRegressionTests
+using Plots, VisualRegressionTests
 using Test, Pkg
 
-# list of maintainers
-maintainers = ["juliohm"]
+# default plot settings
+gr(size=(800,400),yflip=true,colorbar=false,ticks=false)
+
+# workaround GR warnings
+ENV["GKSwstype"] = "100"
 
 # environment settings
+islinux = Sys.islinux()
 istravis = "TRAVIS" ∈ keys(ENV)
-ismaintainer = "USER" ∈ keys(ENV) && ENV["USER"] ∈ maintainers
 datadir = joinpath(@__DIR__,"data")
-
-if ismaintainer
+visualtests = !istravis || (istravis && islinux)
+if !istravis
   Pkg.add("Gtk")
   using Gtk
 end
@@ -35,14 +37,13 @@ function plot_crimisini_on_array(fname, img, inds, psize)
   png(fname)
 end
 
-@testset "ImageInpainting.jl" begin
-  @testset "Plain arrays" begin
-    plot_blobs(fname) = plot_crimisini_on_array(fname, blobs, (50:150,50:150), (11,11))
-    refimg = joinpath(datadir,"Blobs.png")
-    @test test_images(VisualTest(plot_blobs, refimg), popup=!istravis) |> success
+# list of tests
+testfiles = [
+  "crimisini.jl"
+]
 
-    plot_lighthouse(fname) = plot_crimisini_on_array(fname, lighthouse, (50:350,300:400), (30,30))
-    refimg = joinpath(datadir,"LightHouse.png")
-    @test test_images(VisualTest(plot_lighthouse, refimg), popup=!istravis) |> success
+@testset "ImageInpainting.jl" begin
+  for testfile in testfiles
+    include(testfile)
   end
 end
