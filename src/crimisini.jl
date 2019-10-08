@@ -57,13 +57,13 @@ function inpaint_impl(img::AbstractArray{T,N}, mask::BitArray{N}, algo::Crimisin
     end
 
     # isophote map
-    grads = pointgradients(I, δΩ)
-    direc = pointgradients(ϕ, δΩ)
-    D = vec(abs.(sum(grads.*direc, dims=2)))
+    ∇I = pointgradients(I, δΩ)
+    nᵩ = pointgradients(ϕ, δΩ)
+    D  = vec(abs.(sum(∇I .* nᵩ, dims=2)))
     D /= maximum(D)
 
     # select patch in frontier
-    p = δΩ[argmax(C[δΩ].*D)]
+    p  = δΩ[argmax(C[δΩ].*D)]
     ψₚ = selectpatch(I, patchsize, p)
     bₚ = selectpatch(ϕ, patchsize, p)
 
