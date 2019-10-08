@@ -38,12 +38,12 @@ function inpaint_impl(img::AbstractArray{T,N}, mask::BitArray{N}, algo::Crimisin
   # pad arrays
   prepad  = @. (patchsize - 1) ÷ 2
   postpad = @. (patchsize    ) ÷ 2
-  padimg = parent(padarray(img, Pad(:symmetric, prepad, postpad)))
+  I = parent(padarray(img, Pad(:symmetric, prepad, postpad)))
   ϕ = parent(padarray(ϕ, Fill(true, prepad, postpad)))
   C = parent(padarray(C, Fill(0.0,  prepad, postpad)))
 
   # fix any invalid pixel value in masked region
-  replace!(padimg, NaN => 0)
+  replace!(I, NaN => 0)
 
   # inpainting frontier
   δΩ = findall(dilate(ϕ) .& .!ϕ)
@@ -57,19 +57,18 @@ function inpaint_impl(img::AbstractArray{T,N}, mask::BitArray{N}, algo::Crimisin
     end
 
     # isophote map
-    grads = pointgradients(padimg, δΩ)
+    grads = pointgradients(I, δΩ)
     direc = pointgradients(ϕ, δΩ)
     D = vec(abs.(sum(grads.*direc, dims=2)))
     D /= maximum(D)
 
     # select patch in frontier
-    idx = argmax(C[δΩ].*D)
-    p = δΩ[idx]
-    ψₚ = selectpatch(padimg, patchsize, p)
-    bₚ = selectpatch(ϕ     , patchsize, p)
+    p = δΩ[argmax(C[δΩ].*D)]
+    ψₚ = selectpatch(I, patchsize, p)
+    bₚ = selectpatch(ϕ, patchsize, p)
 
     # compute distance to all other patches
-    Δ = convdist(padimg, ψₚ, weights=bₚ)
+    Δ = convdist(I, ψₚ, weights=bₚ)
 
     # only consider patches in filled region
     Δ[mask] .= Inf
@@ -79,8 +78,8 @@ function inpaint_impl(img::AbstractArray{T,N}, mask::BitArray{N}, algo::Crimisin
     q = CartesianIndex(@. sub.I + (patchsize-1)÷2)
 
     # select best candidate
-    ψᵦ = selectpatch(padimg, patchsize, q)
-    bᵦ = selectpatch(ϕ     , patchsize, q)
+    ψᵦ = selectpatch(I, patchsize, q)
+    bᵦ = selectpatch(ϕ, patchsize, q)
 
     # paste patch and mark pixels as painted
     b = bᵦ .& .!bₚ
@@ -91,5 +90,8 @@ function inpaint_impl(img::AbstractArray{T,N}, mask::BitArray{N}, algo::Crimisin
     δΩ = findall(dilate(ϕ) .& .!ϕ)
   end
 
-  view(padimg, [1+prepad[i]:size(padimg,i)-postpad[i] for i=1:N]...)
+  # return unpadded image
+  start  = CartesianIndex(1 .+ prepad)
+  finish = CartesianIndex(size(I) .- postpad)
+  view(I, start:finish)
 end
