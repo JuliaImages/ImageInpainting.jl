@@ -4,10 +4,10 @@
 # ------------------------------------------------------------------
 
 """
-    Crimisini(tilesize)
+    Crimisini(patchsize)
 
 Examplar-based inpainting based on confidence
-and isophote maps. `tilesize` is the patch size
+and isophote maps. `patchsize` is the patch size
 as a tuple of integers.
 
 ## References
@@ -16,10 +16,10 @@ Crimisini, A., Pérez, P., Toyama, K., 2004. Region Filling
 and Object Removal by Examplar-based Image Inpainting.
 """
 struct Crimisini{N} <: InpaintAlgo
-  tilesize::Dims{N} # patch size
+  patchsize::Dims{N}
 end
 
-Crimisini(tilesize::Vararg{Int,N}) where {N} = Crimisini{N}(tilesize)
+Crimisini(patchsize::Vararg{Int,N}) where {N} = Crimisini{N}(patchsize)
 
 # implementation follows the notation in the paper
 function inpaint_impl(img::AbstractArray{T,N}, mask::BitArray{N}, algo::Crimisini{N}) where {T,N}
@@ -27,7 +27,7 @@ function inpaint_impl(img::AbstractArray{T,N}, mask::BitArray{N}, algo::Crimisin
   set_num_threads(cpucores())
 
   # patch (or tile) size
-  tilesize = algo.tilesize
+  patchsize = algo.patchsize
 
   # already filled region
   ϕ = .!mask
@@ -36,8 +36,8 @@ function inpaint_impl(img::AbstractArray{T,N}, mask::BitArray{N}, algo::Crimisin
   C = Float64.(ϕ)
 
   # pad arrays
-  prepad  = @. (tilesize - 1) ÷ 2
-  postpad = @. (tilesize    ) ÷ 2
+  prepad  = @. (patchsize - 1) ÷ 2
+  postpad = @. (patchsize    ) ÷ 2
   padimg = parent(padarray(img, Pad(:symmetric, prepad, postpad)))
   ϕ = parent(padarray(ϕ, Fill(true, prepad, postpad)))
   C = parent(padarray(C, Fill(0.0,  prepad, postpad)))
@@ -51,8 +51,9 @@ function inpaint_impl(img::AbstractArray{T,N}, mask::BitArray{N}, algo::Crimisin
   while !isempty(δΩ)
     # update confidence values in frontier
     for p in δΩ
-      c, b = selectpatch((C, ϕ), tilesize, p)
-      C[p] = sum(c[b]) / prod(tilesize)
+      c = selectpatch(C, patchsize, p)
+      b = selectpatch(ϕ, patchsize, p)
+      C[p] = sum(c[b]) / prod(patchsize)
     end
 
     # isophote map
@@ -64,7 +65,8 @@ function inpaint_impl(img::AbstractArray{T,N}, mask::BitArray{N}, algo::Crimisin
     # select patch in frontier
     idx = argmax(C[δΩ].*D)
     p = δΩ[idx]
-    ψₚ, bₚ = selectpatch((padimg, ϕ), tilesize, p)
+    ψₚ = selectpatch(padimg, patchsize, p)
+    bₚ = selectpatch(ϕ     , patchsize, p)
 
     # compute distance to all other patches
     Δ = convdist(padimg, ψₚ, weights=bₚ)
@@ -74,10 +76,11 @@ function inpaint_impl(img::AbstractArray{T,N}, mask::BitArray{N}, algo::Crimisin
 
     # find index in padded arrays
     sub = argmin(Δ)
-    q = CartesianIndex(@. sub.I + (tilesize-1)÷2)
+    q = CartesianIndex(@. sub.I + (patchsize-1)÷2)
 
     # select best candidate
-    ψᵦ, bᵦ = selectpatch((padimg, ϕ), tilesize, q)
+    ψᵦ = selectpatch(padimg, patchsize, q)
+    bᵦ = selectpatch(ϕ     , patchsize, q)
 
     # paste patch and mark pixels as painted
     b = bᵦ .& .!bₚ

@@ -35,15 +35,14 @@ function convdist(img::AbstractArray, kern::AbstractArray; weights=nothing)
 end
 
 """
-    selectpatch(imgs, tilesize, center)
+    selectpatch(img, patchsize, center)
 
 Helper function to extract a patch of size
-`tilesize` from `imgs` centered at Cartesian
+`patchsize` from `img` centered at Cartesian
 index `center`.
 """
-function selectpatch(imgs, tilesize, center)
-  start  = CartesianIndex(@. center.I - (tilesize-1)÷2)
-  finish = CartesianIndex(@. center.I + (tilesize  )÷2)
-
-  [view(img, start:finish) for img in imgs]
+function selectpatch(img, patchsize, center)
+  start  = CartesianIndex(@. center.I - (patchsize-1)÷2)
+  finish = CartesianIndex(@. center.I + (patchsize  )÷2)
+  view(img, start:finish)
 end
