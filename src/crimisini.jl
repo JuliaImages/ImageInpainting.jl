@@ -36,14 +36,14 @@ function inpaint_impl(img::AbstractArray{T,N}, mask::BitArray{N}, algo::Crimisin
   C = Float64.(ϕ)
 
   # pad arrays
-  prepad  = [(tilesize[i]-1) ÷ 2 for i=1:N]
-  postpad = [(tilesize[i])   ÷ 2 for i=1:N]
+  prepad  = @. (tilesize - 1) ÷ 2
+  postpad = @. (tilesize    ) ÷ 2
   padimg = parent(padarray(img, Pad(:symmetric, prepad, postpad)))
   ϕ = parent(padarray(ϕ, Fill(true, prepad, postpad)))
   C = parent(padarray(C, Fill(0.0,  prepad, postpad)))
 
-  # fix any invalid pixel value (e.g. NaN) inside of the mask
-  padimg[isnan.(padimg)] .= zero(T)
+  # fix any invalid pixel value in masked region
+  replace!(padimg, NaN => 0)
 
   # inpainting frontier
   δΩ = findall(dilate(ϕ) .& .!ϕ)
@@ -74,7 +74,7 @@ function inpaint_impl(img::AbstractArray{T,N}, mask::BitArray{N}, algo::Crimisin
 
     # find index in padded arrays
     sub = argmin(Δ)
-    q = ntuple(i -> sub[i] + (tilesize[i]-1)÷2, N)
+    q = CartesianIndex(@. sub.I + (tilesize-1)÷2)
 
     # select best candidate
     ψᵦ, bᵦ = selectpatch((padimg, ϕ), tilesize, q)

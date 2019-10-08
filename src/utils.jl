@@ -42,11 +42,8 @@ Helper function to extract a patch of size
 index `center`.
 """
 function selectpatch(imgs, tilesize, center)
-  N = length(tilesize)
+  start  = CartesianIndex(@. center.I - (tilesize-1)÷2)
+  finish = CartesianIndex(@. center.I + (tilesize  )÷2)
 
-  # patch corners
-  start  = ntuple(i -> center[i] - (tilesize[i]-1) ÷ 2, N)
-  finish = ntuple(i -> center[i] +     tilesize[i] ÷ 2, N)
-
-  [view(img, [start[i]:finish[i] for i=1:N]...) for img in imgs]
+  [view(img, start:finish) for img in imgs]
 end

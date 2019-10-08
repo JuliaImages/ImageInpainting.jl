@@ -9,10 +9,11 @@
 Compute the gradients along all dimensions of N-dimensional `img`
 at `points` using `method`. Default method is `:ando3`.
 """
-function pointgradients(img::AbstractArray, points::AbstractVector; method=:ando3)
-  extent = size(img)
-  ndirs = length(extent)
-  npoints = length(points)
+function pointgradients(img::AbstractArray{T,N},
+                        points::AbstractVector;
+                        method=:ando3) where {N,T}
+  dims = size(img)
+  npts = length(points)
 
   # smoothing weights
   weights = (method == :sobel ? [1,2,1] :
@@ -20,31 +21,29 @@ function pointgradients(img::AbstractArray, points::AbstractVector; method=:ando
              error("Unknown gradient method: $method"))
 
   # pad input image
-  padimg = padarray(img, Pad(:replicate, ones(Int, ndirs), ones(Int, ndirs)))
+  padimg = padarray(img, Pad(:replicate, 1, 1))
 
   # gradient matrix
-  G = zeros(npoints, ndirs)
+  G = zeros(npts, N)
 
   # compute gradient for all directions at specified points
-  for i in 1:ndirs
+  for i in 1:N
     # kernel = centered difference + perpendicular smoothing
-    if extent[i] > 1
+    if dims[i] > 1
       # centered difference
-      idx = ones(Int, ndirs); idx[i] = 3
-      kern = reshape([-1,0,1], idx...)
+      kern = reshape([-1,0,1], ntuple(k -> k == i ? 3 : 1, N))
       # perpendicular smoothing
-      for j in setdiff(1:ndirs, i)
-        if extent[j] > 1
-          idx = ones(Int, ndirs); idx[j] = 3
-          kern = broadcast(*, kern, reshape(weights, idx...))
+      for j in setdiff(1:N, i)
+        if dims[j] > 1
+          wvec = reshape(weights, ntuple(k -> k == j ? 3 : 1, N))
+          kern = broadcast(*, kern, wvec)
         end
       end
 
       A = zeros(size(kern))
-      shape = size(kern)
       for (k, icenter) in enumerate(points)
-        i1 = CartesianIndex(ntuple(i->1, ndirs))
-        for ii in CartesianIndices(shape)
+        i1 = CartesianIndex(ntuple(i->1, N))
+        for ii in CartesianIndices(A)
           A[ii] = padimg[ii + icenter - i1]
         end
 
