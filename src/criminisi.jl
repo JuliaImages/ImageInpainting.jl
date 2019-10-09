@@ -76,7 +76,7 @@ function inpaint_impl(img::AbstractArray{T,2}, mask::BitArray{2}, algo::Criminis
     bₚ = selectpatch(ϕ, patchsize, p)
 
     # compute distance to all other patches
-    Δ = convdist(I, ψₚ, weights=bₚ)
+    Δ = convdist(I, ψₚ, bₚ)
 
     # only consider patches in filled region
     Δ[mask] .= Inf

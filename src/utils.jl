@@ -8,29 +8,24 @@
 
 Perform filtering on `img` with kernel `kern` using the FFT algorithm.
 """
-function imfilter_cpu(img::AbstractArray{T,N}, kern::AbstractArray{K,N}) where {T<:Real,K<:Real,N}
+imfilter_cpu(img::AbstractArray{T,N}, kern::AbstractArray{K,N}) where {T<:Real,K<:Real,N} =
   imfilter(img, centered(kern), Inner(), Algorithm.FFT())
-end
 
 """
-    convdist(img, kern; [weights])
+    convdist(img, patch, weights)
 
-Compute distance between all subimages of `img` and `kern`.
-Optionally, activate/deactivate pixels in the kern using `weights`.
+Compute distance between all patches of `img` and a single `patch`
+using `weights` for each pixel in the `patch`.
 """
-function convdist(img::AbstractArray, kern::AbstractArray; weights=nothing)
-  # default to uniform weights
-  weights == nothing && (weights = ones(kern))
-
-  wkern = weights.*kern
+function convdist(img::AbstractArray, patch::AbstractArray, weights::AbstractArray)
+  wpatch = weights.*patch
 
   A² = imfilter_cpu(img.^2, weights)
-  AB = imfilter_cpu(img, wkern)
-  B² = sum(abs2, wkern)
+  AB = imfilter_cpu(img, wpatch)
+  B² = sum(abs2, wpatch)
 
   D = abs.(A² .- 2AB .+ B²)
 
-  # always return a plain simple array
   parent(D)
 end
 
