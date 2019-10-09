@@ -35,7 +35,7 @@ function inpaint_impl(img::AbstractArray{T,2}, mask::AbstractArray{Bool,2},
 
   # rotation matrix gradient -> isophote
   # (this line makes the implementation 2D)
-  R = [cos(π/2) sin(π/2)
+  R = [ cos(π/2) sin(π/2)
        -sin(π/2) cos(π/2)]
 
   # already filled region
@@ -47,9 +47,9 @@ function inpaint_impl(img::AbstractArray{T,2}, mask::AbstractArray{Bool,2},
   # pad arrays
   prepad  = @. (patchsize - 1) ÷ 2
   postpad = @. (patchsize    ) ÷ 2
-  I = parent(padarray(img, Pad(:symmetric, prepad, postpad)))
-  ϕ = parent(padarray(ϕ, Fill(true, prepad, postpad)))
-  C = parent(padarray(C, Fill(0.0,  prepad, postpad)))
+  I = padarray(img, Pad(:symmetric, prepad, postpad))
+  ϕ = padarray(ϕ, Fill(true, prepad, postpad))
+  C = padarray(C, Fill(0.0,  prepad, postpad))
 
   # fix any invalid pixel value in masked region
   replace!(I, NaN => 0)
@@ -82,11 +82,8 @@ function inpaint_impl(img::AbstractArray{T,2}, mask::AbstractArray{Bool,2},
     # only consider patches in filled region
     Δ[mask] .= Inf
 
-    # find index in padded arrays
-    sub = argmin(Δ)
-    q = CartesianIndex(@. sub.I + (patchsize-1)÷2)
-
     # select best candidate
+    q = argmin(Δ)
     ψᵦ = selectpatch(I, patchsize, q)
     bᵦ = selectpatch(ϕ, patchsize, q)
 
