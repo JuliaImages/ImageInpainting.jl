@@ -16,7 +16,8 @@ abstract type InpaintAlgo end
 Inpaint `img` on pixels marked as `true` in `mask` using
 algorithm `algo`.
 """
-function inpaint(img::AbstractArray, mask::BitArray, algo::InpaintAlgo)
+function inpaint(img::AbstractArray{T,N}, mask::AbstractArray{Bool,N},
+                 algo::InpaintAlgo) where {N,T}
   # sanity checks
   @assert size(img) == size(mask) "image and mask must have same size"
 
