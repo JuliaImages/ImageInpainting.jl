@@ -12,7 +12,7 @@ as a tuple of integers.
 
 ## Notes
 
-The Criminisialgorithm requires 2D images.
+The Criminisi algorithm is defined for 2D images.
 
 ## References
 
@@ -66,8 +66,8 @@ function inpaint_impl(img::AbstractArray{T,2}, mask::BitArray{2}, algo::Criminis
 
     # isophote map
     ∇I = pointgradients(I, δΩ) * R
-    nᵩ = pointgradients(ϕ, δΩ)
-    D  = vec(abs.(sum(∇I .* nᵩ, dims=2)))
+    nϕ = pointgradients(ϕ, δΩ)
+    D  = vec(abs.(sum(∇I .* nϕ, dims=2)))
     D /= maximum(D)
 
     # select patch in frontier
