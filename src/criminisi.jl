@@ -4,30 +4,38 @@
 # ------------------------------------------------------------------
 
 """
-    Crimisini(patchsize)
+    Criminisi(px, py)
 
 Examplar-based inpainting based on confidence
-and isophote maps. `patchsize` is the patch size
+and isophote maps. `(px, py)` is the patch size
 as a tuple of integers.
+
+## Notes
+
+The Criminisialgorithm requires 2D images.
 
 ## References
 
-Crimisini, A., Pérez, P., Toyama, K., 2004. Region Filling
+Criminisi, A., Pérez, P., Toyama, K., 2004. Region Filling
 and Object Removal by Examplar-based Image Inpainting.
 """
-struct Crimisini{N} <: InpaintAlgo
-  patchsize::Dims{N}
+struct Criminisi <: InpaintAlgo
+  px::Int
+  py::Int
 end
 
-Crimisini(patchsize::Vararg{Int,N}) where {N} = Crimisini{N}(patchsize)
-
 # implementation follows the notation in the paper
-function inpaint_impl(img::AbstractArray{T,N}, mask::BitArray{N}, algo::Crimisini{N}) where {T,N}
+function inpaint_impl(img::AbstractArray{T,2}, mask::BitArray{2}, algo::Criminisi) where {T}
   # use all CPU cores in FFT
   set_num_threads(cpucores())
 
   # patch (or tile) size
-  patchsize = algo.patchsize
+  patchsize = algo.px, algo.py
+
+  # rotation matrix gradient -> isophote
+  # (this line makes the implementation 2D)
+  R = [cos(π/2) sin(π/2)
+       -sin(π/2) cos(π/2)]
 
   # already filled region
   ϕ = .!mask
@@ -57,7 +65,7 @@ function inpaint_impl(img::AbstractArray{T,N}, mask::BitArray{N}, algo::Crimisin
     end
 
     # isophote map
-    ∇I = pointgradients(I, δΩ)
+    ∇I = pointgradients(I, δΩ) * R
     nᵩ = pointgradients(ϕ, δΩ)
     D  = vec(abs.(sum(∇I .* nᵩ, dims=2)))
     D /= maximum(D)

@@ -27,4 +27,4 @@ end
 #------------------
 # IMPLEMENTATIONS
 #------------------
-include("crimisini.jl")
+include("criminisi.jl")

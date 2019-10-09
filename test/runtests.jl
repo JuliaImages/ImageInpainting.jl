@@ -25,12 +25,12 @@ blobs = testimage("blobs")
 lighthouse = testimage("lighthouse")
 
 # helper functions
-function plot_crimisini_on_array(fname, img, inds, psize)
+function plot_criminisi_on_array(fname, img, inds, psize)
   fimg = Float64.(Gray.(img))
   mask = falses(size(fimg))
   mask[inds...] .= true
   fimg[mask] .= NaN
-  fimg2 = inpaint(fimg, mask, Crimisini(psize))
+  fimg2 = inpaint(fimg, mask, Criminisi(psize[1], psize[2]))
   plt1 = heatmap(fimg, title="before inpainting")
   plt2 = heatmap(fimg2, title="after inpainting")
   plot(plt1, plt2)
@@ -39,7 +39,7 @@ end
 
 # list of tests
 testfiles = [
-  "crimisini.jl"
+  "criminisi.jl"
 ]
 
 @testset "ImageInpainting.jl" begin

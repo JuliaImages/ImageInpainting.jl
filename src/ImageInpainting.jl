@@ -19,6 +19,6 @@ export
   inpaint,
 
   # algorithms
-  Crimisini
+  Criminisi
 
 end

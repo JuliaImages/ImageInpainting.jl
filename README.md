@@ -32,7 +32,7 @@ inpaint(img, mask, algo)
 
 | Algorithm type | References |
 |----------------|------------|
-| `Crimisini` | Crimisini, A., Pérez, P., Toyama, K., 2004. Region Filling and Object Removal by Examplar-based Image Inpainting. |
+| `Criminisi` | Criminisi, A., Pérez, P., Toyama, K., 2004. Region Filling and Object Removal by Examplar-based Image Inpainting. |
 
 ## Contributing
 
