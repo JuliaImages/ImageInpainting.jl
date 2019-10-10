@@ -33,26 +33,25 @@ function inpaint_impl(img::AbstractArray{T,2}, mask::AbstractArray{Bool,2},
   # patch (or tile) size
   patchsize = algo.px, algo.py
 
-  # rotation matrix gradient -> isophote
-  # (this line makes the implementation 2D)
+  # rotation matrix: gradient -> isophote
+  # (this is what makes the implementation 2D)
   R = [ cos(π/2) sin(π/2)
        -sin(π/2) cos(π/2)]
 
-  # already filled region
-  ϕ = .!mask
-
-  # initialize confidence map
-  C = Float64.(ϕ)
-
-  # pad arrays
+  # pad input arrays
   prepad  = @. (patchsize - 1) ÷ 2
   postpad = @. (patchsize    ) ÷ 2
   I = padarray(img, Pad(:symmetric, prepad, postpad))
-  ϕ = padarray(ϕ, Fill(true, prepad, postpad))
-  C = padarray(C, Fill(0.0,  prepad, postpad))
+  M = padarray(mask, Fill(false, prepad, postpad))
 
   # fix any invalid pixel value in masked region
   replace!(I, NaN => 0)
+
+  # already filled region
+  ϕ = .!M
+
+  # initialize confidence map
+  C = Float64.(ϕ)
 
   # inpainting frontier
   δΩ = findall(dilate(ϕ) .& .!ϕ)
