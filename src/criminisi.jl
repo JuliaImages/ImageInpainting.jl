@@ -94,6 +94,8 @@ function inpaint_impl(img::AbstractArray{T,2}, mask::AbstractArray{Bool,2},
     δΩ = findall(dilate(ϕ) .& .!ϕ)
   end
 
-  # TODO: return unpadded image
-  I
+  # return unpadded image
+  start  = CartesianIndex(ntuple(i->1, ndims(img)))
+  finish = CartesianIndex(size(img))
+  I[start:finish]
 end
