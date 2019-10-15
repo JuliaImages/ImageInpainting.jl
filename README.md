@@ -27,7 +27,7 @@ using ImageInpainting
 # inpaint image within mask using algorithm
 inpaint(img, mask, algo)
 ```
-where `mask` is set to `true` whenever a pixel is to be inpainted.
+where `mask[i,j,...]` is set to `true` whenever a pixel is to be inpainted.
 
 Examples of usage for each algorithm can be found in the test folder.
 
