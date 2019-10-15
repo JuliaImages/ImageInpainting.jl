@@ -20,10 +20,10 @@ end
 # helper functions
 function plot_before_after(before, mask, after)
   gr(size=(800,400),yflip=true,colorbar=false,ticks=false)
-  p1 = heatmap(before,title="before")
-  p2 = heatmap(mask,title="mask")
-  p3 = heatmap(after,title="after")
-  plot(p1, p2, p3, aspect_ratio=:equal, layout=(1,3))
+  B = copy(before); B[mask] .= NaN
+  p1 = heatmap(B,title="before")
+  p2 = heatmap(after,title="after")
+  plot(p1, p2, aspect_ratio=:equal)
 end
 
 # list of tests
