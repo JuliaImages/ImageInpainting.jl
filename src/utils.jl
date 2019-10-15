@@ -22,7 +22,7 @@ function convdist(img::AbstractArray, patch::AbstractArray, weights::AbstractArr
 
   A² = imfilter_cpu(img.^2, weights)
   AB = imfilter_cpu(img, wpatch)
-  B² = sum(abs2, wpatch)
+  B² = sum(wpatch .* patch)
 
   D = abs.(A² .- 2AB .+ B²)
 
