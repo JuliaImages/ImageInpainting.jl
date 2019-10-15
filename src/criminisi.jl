@@ -47,7 +47,7 @@ function inpaint_impl(img::AbstractArray{T,2}, mask::AbstractArray{Bool,2},
   # fix any invalid pixel value in masked region
   replace!(I, NaN => 0)
 
-  # already filled region
+  # initialize filled region
   ϕ = .!M
 
   # initialize confidence map
@@ -95,8 +95,6 @@ function inpaint_impl(img::AbstractArray{T,2}, mask::AbstractArray{Bool,2},
     δΩ = findall(dilate(ϕ) .& .!ϕ)
   end
 
-  # return unpadded image
-  start  = CartesianIndex(1 .+ prepad)
-  finish = CartesianIndex(size(I) .- postpad)
-  view(I, start:finish)
+  # TODO: return unpadded image
+  I
 end
