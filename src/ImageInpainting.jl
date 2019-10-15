@@ -1,6 +1,5 @@
 # ------------------------------------------------------------------
-# Copyright (c) 2018, Júlio Hoffimann Mendes <juliohm@stanford.edu>
-# Licensed under the ISC License. See LICENCE in the project root.
+# Licensed under the ISC License. See LICENSE in the project root.
 # ------------------------------------------------------------------
 
 module ImageInpainting
