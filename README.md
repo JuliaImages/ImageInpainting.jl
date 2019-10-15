@@ -9,7 +9,7 @@ For those situations where we need to remove undesired elements from the scene..
 
 ![lighthouse](imgs/lighthouse.png)
 
-**Obs:** Currently, only single channel N-dimensional images are supported. For example, `zeros(100,100)` and `zeros(50,50,50)` are valid 2D and 3D input images. `zeros(100,100,3)` is *not* a 2D image with 3 channels.
+**Obs:** Currently, only single channel images are supported.
 
 ## Installation
 
@@ -27,6 +27,9 @@ using ImageInpainting
 # inpaint image within mask using algorithm
 inpaint(img, mask, algo)
 ```
+where `mask` is set to `true` whenever a pixel is to be inpainted.
+
+Examples of usage for each algorithm can be found in the test folder.
 
 ## Algorithms
 
