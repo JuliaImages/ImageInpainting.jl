@@ -5,18 +5,18 @@
     img  = [i + j > 10 ? 0.1 : 0.2 for i in 1:10, j in 1:10]
     mask = [1.2cos(i) + i > j for i in 1:10, j in 1:10]
     out  = inpaint(img, mask, Criminisi(5,5))
-    @test_reference joinpath(refdir, "Diagonal.png") Gray.(out)
+    @test_reference joinpath(refdir, "Diagonal.txt") out
 
     # Cross
-    img = zeros(50,50) .+ 0.5
-    for i in 1:50
+    img = zeros(20,20) .+ 0.5
+    for i in 1:20
         img[i,i] = 1.0
-        img[i,50-i+1] = 1.0
+        img[i,20-i+1] = 1.0
     end
     mask = falses(size(img))
-    mask[20:30,15:40] .= true
+    mask[8:12,6:16] .= true
     out = inpaint(img, mask, Criminisi(9,9))
-    @test_reference joinpath(refdir, "Cross.png") Gray.(out)
+    @test_reference joinpath(refdir, "Cross.txt") out
 
     # Blobs
     img  = Float64.(Gray.(testimage("blobs")))
