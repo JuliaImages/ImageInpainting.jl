@@ -1,7 +1,8 @@
 # ImageInpainting.jl
 
-[![Build Status](https://travis-ci.org/JuliaImages/ImageInpainting.jl.svg?branch=master)](https://travis-ci.org/JuliaImages/ImageInpainting.jl)
-[![CodeCov](https://codecov.io/gh/JuliaImages/ImageInpainting.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaImages/ImageInpainting.jl)
+[![][travis-img]][travis-url]
+[![][pkgeval-img]][pkgeval-url]
+[![][codecov-img]][codecov-url]
 
 Image inpainting algorithms in Julia.
 
@@ -43,3 +44,13 @@ Contributions are very welcome, as are feature requests and suggestions.
 
 Please [open an issue](https://github.com/JuliaImages/ImageInpainting.jl/issues) if you encounter
 any problems.
+
+
+<!-- URLS -->
+
+[pkgeval-img]: https://juliaci.github.io/NanosoldierReports/pkgeval_badges/I/ImageInpainting.svg
+[pkgeval-url]: https://juliaci.github.io/NanosoldierReports/pkgeval_badges/report.html
+[travis-img]: https://travis-ci.com/JuliaImages/ImageInpainting.jl.svg?branch=master
+[travis-url]: https://travis-ci.com/JuliaImages/ImageInpainting.jl
+[codecov-img]: https://codecov.io/gh/juliaimages/ImageInpainting.jl/branch/master/graph/badge.svg
+[codecov-url]: https://codecov.io/gh/juliaimages/ImageInpainting.jl

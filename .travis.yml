@@ -2,15 +2,19 @@ language: julia
 os:
   - linux
   - osx
+  - windows
 julia:
-  - 1.2
+  - 1.0
+  - 1
   - nightly
 matrix:
   allow_failures:
     - julia: nightly
   fast_finish: true
+cache:
+  directories:
+    - $HOME/.julia/artifacts
 notifications:
   email: false
-after_success:
-  - julia -e 'using Pkg; Pkg.add("Coverage")'
-  - julia -e 'using Coverage; Codecov.submit(process_folder())'
+codecov: true
+coveralls: true
