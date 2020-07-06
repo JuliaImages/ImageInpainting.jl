@@ -10,6 +10,10 @@ Perform filtering on `img` with kernel `kern` using the FFT algorithm.
 imfilter_fft(img::AbstractArray{T,N}, kern::AbstractArray{K,N}) where {T<:Real,K<:Real,N} =
   imfilter(img, centered(kern), Inner(), Algorithm.FFT())
 
+imfilter_fft(img::AbstractArray{<:AbstractGray}, kern::AbstractArray) = 
+  imfilter(img, centered(Float64.(kern)), Inner(), Algorithm.FFT())
+
+
 """
     convdist(img, patch, weights)
 

@@ -24,8 +24,8 @@ struct Criminisi <: InpaintAlgo
 end
 
 # implementation follows the notation in the paper
-function inpaint_impl(img::AbstractArray{T,2}, mask::AbstractArray{Bool,2},
-                      algo::Criminisi) where {T}
+function inpaint_impl(img::AbstractArray{<:AbstractGray}, mask::AbstractArray{Bool,2},
+        algo::Criminisi)
   # use all CPU cores in FFT
   set_num_threads(cpucores())
 

@@ -4,6 +4,7 @@
 
 module ImageInpainting
 
+using ImageCore
 using ImageMorphology
 using ImageFiltering
 using FFTW: set_num_threads
