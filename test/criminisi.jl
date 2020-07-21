@@ -23,12 +23,14 @@
     mask = falses(size(img))
     mask[50:150,50:150] .= true
     out = inpaint(img, mask, Criminisi(11,11))
-    @test_reference joinpath(refdir, "Blobs.png") Gray.(out)
+    @test_reference joinpath(refdir, "Blobs.txt") Gray{N0f8}.(clamp01!(out))
+    @test_reference joinpath(refdir, "Blobs.png") Gray{N0f8}.(clamp01!(out))
 
     # LightHouse
     img  = Float64.(Gray.(testimage("lighthouse")))
     mask = falses(size(img))
     mask[50:350,300:400] .= true
     out = inpaint(img, mask, Criminisi(30,30))
-    @test_reference joinpath(refdir, "LightHouse.png") Gray.(out)
+    @test_reference joinpath(refdir, "LightHouse.txt") Gray{N0f8}.(clamp01!(out))
+    @test_reference joinpath(refdir, "LightHouse.png") Gray{N0f8}.(clamp01!(out))
 end

@@ -3,14 +3,6 @@
 # ------------------------------------------------------------------
 
 """
-    imfilter_fft(img, kern)
-
-Perform filtering on `img` with kernel `kern` using the FFT algorithm.
-"""
-imfilter_fft(img::AbstractArray{T,N}, kern::AbstractArray{K,N}) where {T<:Real,K<:Real,N} =
-  imfilter(img, centered(kern), Inner(), Algorithm.FFT())
-
-"""
     convdist(img, patch, weights)
 
 Compute distance between all patches of `img` and a single `patch`
@@ -19,8 +11,8 @@ using `weights` for each pixel in the `patch`.
 function convdist(img::AbstractArray, patch::AbstractArray, weights::AbstractArray)
   wpatch = weights.*patch
 
-  A² = imfilter_fft(img.^2, weights)
-  AB = imfilter_fft(img, wpatch)
+  A² = imfilter(img.^2, centered(weights), Inner())
+  AB = imfilter(img, centered(wpatch), Inner())
   B² = sum(wpatch .* patch)
 
   abs.(A² .- 2AB .+ B²)

@@ -27,7 +27,7 @@ end
 function inpaint_impl(img::AbstractArray{T,2}, mask::AbstractArray{Bool,2},
                       algo::Criminisi) where {T}
   # use all CPU cores in FFT
-  set_num_threads(cpucores())
+  # set_num_threads(cpucores())
 
   # patch (or tile) size
   patchsize = algo.px, algo.py
