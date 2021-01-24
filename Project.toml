@@ -10,7 +10,7 @@ ImageFiltering = "6a3955dd-da59-5b1f-98d4-e7296123deb5"
 ImageMorphology = "787d08f9-d448-5407-9aad-5290dd7ab264"
 
 [compat]
-CpuId = "^0.2"
+CpuId = "^0.2, 0.3"
 FFTW = "^1.0"
 ImageFiltering = "^0.6"
 ImageMorphology = "^0.2"
