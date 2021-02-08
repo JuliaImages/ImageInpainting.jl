@@ -2,7 +2,7 @@ using ImageInpainting
 using ColorTypes
 using TestImages
 using ReferenceTests
-using Test, Pkg
+using Test
 
 # list of tests
 testfiles = [
