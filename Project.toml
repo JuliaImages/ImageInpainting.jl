@@ -1,7 +1,7 @@
 name = "ImageInpainting"
 uuid = "2bcd8d84-2ef9-5317-bfa0-0ed5605635ad"
 author = "Júlio Hoffimann <julio.hoffimann@gmail.com>"
-version = "0.2.0"
+version = "1.0.0"
 
 [deps]
 CpuId = "adafc99b-e345-5852-983c-f28acb93d879"
@@ -10,8 +10,8 @@ ImageFiltering = "6a3955dd-da59-5b1f-98d4-e7296123deb5"
 ImageMorphology = "787d08f9-d448-5407-9aad-5290dd7ab264"
 
 [compat]
-CpuId = "^0.2, 0.3"
-FFTW = "^1.0"
-ImageFiltering = "^0.6"
-ImageMorphology = "^0.2"
+CpuId = "0.3"
+FFTW = "1"
+ImageFiltering = "0.7"
+ImageMorphology = "0.4"
 julia = "1"
