@@ -1,7 +1,7 @@
 # ImageInpainting.jl
 
-[![Build Status](https://img.shields.io/github/workflow/status/JuliaImages/ImageInpainting.jl/CI)](https://github.com/JuliaImages/ImageInpainting.jl/actions)
-[![CodeCov](https://codecov.io/gh/JuliaImages/ImageInpainting.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaImages/ImageInpainting.jl)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/JuliaImages/ImageInpainting.jl/CI.yml?branch=master&style=flat-square)](https://github.com/JuliaImages/ImageInpainting.jl/actions)
+[![CodeCov](https://img.shields.io/codecov/c/github/JuliaImages/ImageInpainting.jl?style=flat-square)](https://codecov.io/gh/JuliaImages/ImageInpainting.jl)
 
 Image inpainting algorithms in Julia.
 
